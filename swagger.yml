@@ -1,0 +1,95 @@
+---
+swagger: "2.0"
+
+info:
+  version: 1.0.0
+  title: Cashier Service API
+  description: An API for cashier service
+
+host: "localhost:5000"
+schemes:
+  - http
+
+paths:
+  /health:
+    get:
+      summary: Check the health of the service
+      description: Returns a message indicating the health of the service
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Service is up and running
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Contains the string "OK"
+  /cashier/create/:
+    post:
+      summary: |
+       Creates a new debit or credit operation for a given account.
+      description: Provide a service to deposit and withdrawn money
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          description: Data relating to the event at the point-of-time
+          schema:
+            $ref: "#/definitions/Cashier"
+      responses:
+        202:
+          description: Received was received ok and will process shortly.
+          schema:
+              $ref: "#/definitions/Response"
+        404:
+          description: Operation failed
+
+definitions:
+ Cashier:
+   type: object
+   properties:
+     accountNumber:
+       type: string
+       description: Account name
+     amount:
+       type: integer
+       description: Amount to credit/debit
+     operation:
+       type: string
+       description: Customer Surname
+       enum:
+       - debit
+       - credit
+ Response:
+    type: object
+    properties:
+      id:
+        type: string
+        description: UUID of the feed item
+      accountNumber:
+        type: string
+        description: Account Number
+      operation:
+       type: string
+       description: Customer Surname
+       enum:
+       - debit
+       - credit
+      amount:
+        type: string
+        description: Ammount authorized for action
+      created:
+        type: string
+        format: "date-time"
+        description: A descrite event that happen at a point in time
+      status:
+        type: string
+        description: Possible status values
+        enum:
+        - accepted
+        - authorized
+        - complete
