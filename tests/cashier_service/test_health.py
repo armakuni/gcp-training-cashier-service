@@ -1,5 +1,3 @@
-from unittest.mock import Mock
-
 import pytest
 
 from cashier_service.app import create
@@ -12,6 +10,7 @@ def web_client():
     broker = MockEvents()
     return create(config=config['development'],
                   broker=broker).test_client()
+
 
 def test_should_have_web_client(web_client):
     response = web_client.get('/cashier/health')

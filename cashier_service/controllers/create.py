@@ -14,6 +14,7 @@ PAYLOAD_SCHEMA = Schema(dict(accountNumber=And(str, lambda s: len(s) == 8),
                              amount=And(int, lambda n: n > 0),
                              operation=lambda s: s in ['credit', 'debit']))
 
+
 @process.route('/create', methods=['POST'])
 def process_cashier_requests():
     if not request.is_json:
@@ -48,6 +49,7 @@ def process_cashier_requests():
         operation=operation,
         created=created), HTTPStatus.ACCEPTED
 
+
 @process.route('/swagger.yml', methods=['GET'])
 def get_swagger():
     return send_from_directory(get_app_base_path(), 'swagger.yml')
@@ -56,18 +58,23 @@ def get_swagger():
 class ContentTypeError(RuntimeError):
     pass
 
+
 class FailedToPublishError(RuntimeError):
     pass
+
 
 @process.errorhandler(SchemaError)
 def schema_error(e):
     return jsonify(message=str(e)), HTTPStatus.BAD_REQUEST
+
 
 @process.errorhandler(ContentTypeError)
 def content_type_error(e):
     return jsonify(message='Request must be JSON'), \
         HTTPStatus.UNSUPPORTED_MEDIA_TYPE
 
+
 @process.errorhandler(FailedToPublishError)
 def failed_to_publish_error(e):
-    return jsonify(message="Failed to process transaction"), HTTPStatus.INTERNAL_SERVER_ERROR
+    return jsonify(message="Failed to process transaction"), \
+        HTTPStatus.INTERNAL_SERVER_ERROR

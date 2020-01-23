@@ -6,6 +6,7 @@ from cashier_service.settings import Config
 from cashier_service.controllers.health import health
 from cashier_service.controllers.create import process
 
+
 def create(config, broker):
     app = Flask(__name__,
                 static_folder=get_app_base_path(),

@@ -1,5 +1,5 @@
 import json
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from http import HTTPStatus
 
 import pytest
@@ -14,9 +14,11 @@ def web_client(broker):
     return create(config=config['testing'],
                   broker=broker).test_client()
 
+
 @pytest.fixture(scope='function')
 def broker():
     return MockEvents()
+
 
 def test_should_produce_event(web_client, broker):
     payload = dict(accountNumber='12345678', amount=10815, operation='debit')
@@ -33,6 +35,7 @@ def test_should_produce_event(web_client, broker):
     assert event['status'] == 'accepted'
     assert 'created' in event
 
+
 def test_should_process_client_request(web_client):
     payload = dict(accountNumber="12345678", amount=10815, operation="credit")
 
@@ -43,19 +46,24 @@ def test_should_process_client_request(web_client):
     assert response.get_json()['accountNumber'] == '12345678', \
         f'Unexpected JSON; got {repr(response.get_json())}'
 
+
 def test_bad_content_type(web_client):
     response = web_client.post('/cashier/create', data='not json')
 
     assert response.status_code == 415, response.status_code
 
+
 @patch("cashier_service.mock.mock_events.MockEvents.produce")
-def test_controller_returns_500_error_when_fails_to_publish_message(produce, web_client):
+def test_returns_500_error_when_fails_to_publish_message(produce, web_client):
     payload = dict(accountNumber='12345678', amount=10815, operation='debit')
     produce.side_effect = Exception()
 
-    response = web_client.post('/cashier/create', json=json.loads(json.dumps(payload)))
+    response = web_client.post('/cashier/create', json=json.loads(
+        json.dumps(payload))
+    )
     assert response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
     assert response.get_json() == {"message": "Failed to process transaction"}
+
 
 @pytest.mark.parametrize(
     'payload',

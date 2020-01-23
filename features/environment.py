@@ -1,5 +1,3 @@
-import logging
-
 from cashier_service import app
 from cashier_service.mock.mock_events import MockEvents
 from cashier_service.settings import config
