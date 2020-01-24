@@ -13,4 +13,4 @@ class EventPublisher:
     def produce(self, event):
         future = self.client.publish(self.topic, bytes(event, 'utf-8'))
         message_id = future.result()
-        logging.info("Message ID: " + message_id)
+        logging.info("Message ID: " + str(message_id))
