@@ -3,27 +3,27 @@ from cashier_service.mock.mock_config import MockConfig
 from unittest.mock import patch, Mock
 from concurrent.futures import Future
 from json import dumps
+import os
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./tests/cashier_service/mock/dummy_cred.json"
 
-@patch("google.cloud")
-def test_event_publisher_sets_topic_correctly(cloud):
-    cloud.pubsub.PublisherClient.return_value = Mock()
+def test_event_publisher_sets_topic_correctly():
     config = MockConfig("test_topic", "test_project")
-    publisher = EventPublisher(config, cloud.pubsub)
+    publisher = EventPublisher(config)
 
     assert publisher.topic == 'projects/test_project/topics/test_topic'
 
 
-@patch("google.cloud")
-def test_event_publisher_sends_message_info_correctly(cloud):
+@patch("google.cloud.pubsub.PublisherClient.publish")
+def test_event_publisher_sends_message_info_correctly(publish):
     mock_future = Mock(Future())
-    cloud.pubsub.PublisherClient.return_value.publish.return_value = mock_future
+    publish.return_value = mock_future
     config = MockConfig("test_topic", "test_project")
-    publisher = EventPublisher(config, cloud.pubsub)
+    publisher = EventPublisher(config)
     event = dumps(dict(accountNumber="12345678", clearedBalance=500))
 
     publisher.produce(event)
 
-    cloud.pubsub.PublisherClient.return_value.publish.assert_called_with("projects/test_project/topics/test_topic",
+    publish.assert_called_with("projects/test_project/topics/test_topic",
                                bytes(event, 'utf-8'))
     mock_future.result.assert_called_once()
