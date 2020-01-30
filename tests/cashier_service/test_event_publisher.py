@@ -5,7 +5,9 @@ from concurrent.futures import Future
 from json import dumps
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./tests/cashier_service/mock/dummy_cred.json"
+test_credentials_path = "./tests/cashier_service/mock/dummy_cred.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = test_credentials_path
+
 
 def test_event_publisher_sets_topic_correctly():
     config = MockConfig("test_topic", "test_project")
