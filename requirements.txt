@@ -51,7 +51,7 @@ schema==0.7.1
 six==1.13.0
 structlog==19.2.0
 typed-ast==1.4.1
-urllib3==1.25.7
+urllib3==1.25.8
 virtualenv
 wcwidth==0.1.8
 Werkzeug==0.16.0
